@@ -7,8 +7,54 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    name: Build and Test
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [11, 17, 21]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Run tests
+      run: ./gradlew test
+      
+    - name: Generate test coverage report
+      run: ./gradlew jacocoTestReport
+      
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-jdk${{ matrix.java-version }}
+        path: |
+          build/reports/tests/
+          build/reports/jacoco/
+        retention-days: 7
+
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     
     steps:
@@ -21,38 +67,66 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Set up Kotlin
-      run: |
-        wget -O kotlin-compiler.zip https://github.com/JetBrains/kotlin/releases/download/v1.9.21/kotlin-compiler-1.9.21.zip
-        unzip kotlin-compiler.zip
-        sudo mv kotlinc /usr/local/
-        echo "/usr/local/kotlinc/bin" >> $GITHUB_PATH
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
         
-    - name: Verify Kotlin installation
-      run: kotlinc -version
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
       
-    - name: Compile Kotlin source
-      run: |
-        kotlinc kotlin/*.kt -include-runtime -d ProductManagementSystem.jar
+    - name: Run ktlint check
+      run: ./gradlew ktlintCheck
+      
+    - name: Upload ktlint reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ktlint-reports
+        path: build/reports/ktlint/
+        retention-days: 7
+
+  build:
+    name: Build
+    needs: [test, quality]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
         
-    - name: Verify build artifact
-      run: |
-        if [ -f "ProductManagementSystem.jar" ]; then
-          echo "✅ Build successful - JAR created"
-          ls -la ProductManagementSystem.jar
-        else
-          echo "❌ Build failed - JAR not found"
-          exit 1
-        fi
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
         
-    - name: Test application startup
-      run: |
-        timeout 5s java -jar ProductManagementSystem.jar || true
-        echo "✅ Application starts successfully"
-        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Build application
+      run: ./gradlew build
+      
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: kotlin-app
-        path: ProductManagementSystem.jar
+        path: |
+          build/libs/*.jar
+          build/distributions/
         retention-days: 7
