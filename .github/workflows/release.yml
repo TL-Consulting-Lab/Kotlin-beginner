@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Build application
+      run: ./gradlew build
+      
+    - name: Extract release notes
+      id: extract-release-notes
+      run: |
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        
+        # Create simple release notes
+        cat > release_notes.md << EOF
+        ## What's Changed in $TAG_NAME
+        
+        ### Features
+        - Product Management System with Kotlin
+        - Console-based CRUD operations
+        - Web interface for modern UI experience
+        - Comprehensive CI/CD pipeline with GitHub Actions
+        
+        ### Technical Improvements
+        - Multi-JDK support (Java 11, 17, 21)
+        - Automated testing with JUnit 5
+        - Code coverage reporting with JaCoCo
+        - Code quality checks with ktlint
+        - Gradle build system with wrapper
+        
+        ### Artifacts
+        - \`kotlin-product-management-$TAG_NAME.jar\` - Executable JAR file
+        - \`kotlin-product-management-$TAG_NAME.tar\` - Distribution archive
+        - \`kotlin-product-management-$TAG_NAME.zip\` - Distribution ZIP
+        EOF
+      
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ steps.extract-release-notes.outputs.tag_name }}
+        body_path: release_notes.md
+        files: |
+          build/libs/*.jar
+          build/distributions/*.tar
+          build/distributions/*.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
