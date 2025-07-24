@@ -40,12 +40,15 @@ Ask questions on what the feature does, how it should work, and what the expecte
 
 ## Test Implementation
 
-- test the implementation of the new feature to add product category fetaure like phones, laptops, headphones, etc.
+- Write unit for test the create product functionality
 - Implement tests for:
     - Frontend components 
     - Backend API endpoints
     - Error handling scenarios
     - State management
+ 
+## Refactoring code
+Refactor this code so that it follows the builder design pattern
 
 ## Documentation
 
