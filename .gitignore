@@ -1,0 +1,31 @@
+# Build artifacts
+*.jar
+*.class
+*.war
+
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+/tmp/
+
+# Test reports
+test-results/
+reports/

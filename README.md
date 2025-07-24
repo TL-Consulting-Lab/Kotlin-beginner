@@ -1,5 +1,9 @@
 # Product Management System
 
+[![CI/CD Pipeline](https://github.com/TL-Consulting-Lab/Kotlin-beginner/actions/workflows/ci.yml/badge.svg)](https://github.com/TL-Consulting-Lab/Kotlin-beginner/actions/workflows/ci.yml)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.21-blue.svg)](https://kotlinlang.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 A simple console-based Product Management System built with Kotlin that allows you to manage products with basic CRUD operations.
 
 ## Features
