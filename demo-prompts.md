@@ -68,6 +68,10 @@ To view it as a diagram:
 - Press Ctrl+Shift+V (Windows) to open the preview
 - The Mermaid diagrams will be rendered automatically
 
+## Deploy to Azure
+Use github actions to deploy the kotlin application to azure
+
+
 ## Check if servers are running
 - check if both servers are running correctly
 
