@@ -2,22 +2,35 @@
 This file contains the prompts used during the development and testing of a Kotlin application which does product management.
 
 ## Explain Code
+Inline Copilot chat
+Hiighlight a block of code and ask copilot using /Explain
 
-- /explain Please explain this code base
+Agent Mode
+- /explain Please explain this code base 
 
-## Check if servers are running
-- check if both servers are running correctly
-
-## perform an action
-- run the app
-
-## Setup, Run & Health Check
-
-- Setup the project and verify it works.
+## Using Inline comments for code generation
+Go to, ProductManager.kt, write // Update an existing product. 
+Copilot will analyze and suggest a code block, You can accept by clicking enter 
 
 ## Add functionality
 Add task management functionality 
 - add a new feature to Update/Edit Products, allowing users to modify product details
+
+Update main.kt and frontend as well along with any other dependencies
+Suggest commands to run this
+
+Compile the updated code
+> cd Kotlin-beginner
+> kotlinc kotlin\Main.kt kotlin\Product.kt kotlin\ProductManager.kt -include-runtime -d ProductManagementSystem.jar
+
+Run the application
+> java -jar ProductManagementSystem.jar
+
+Open Web Interface
+> cd frontend
+> start index.html
+
+Additional features
 - add a new feature to Delete Products, allowing users to remove products from the system
 - add a new feature for product Status: Active/Inactive/Discontinued status
 - add a new feature to the application to support image upload and display for products.
@@ -51,4 +64,14 @@ To view it as a diagram:
 - Open WORKFLOW.md in VS Code
 - Press Ctrl+Shift+V (Windows) to open the preview
 - The Mermaid diagrams will be rendered automatically
+
+## Check if servers are running
+- check if both servers are running correctly
+
+## perform an action
+- run the app
+
+## Setup, Run & Health Check
+
+- Setup the project and verify it works.
 
