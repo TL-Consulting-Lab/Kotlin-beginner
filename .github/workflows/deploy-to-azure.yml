@@ -1,0 +1,103 @@
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: kotlin-product-management    # Set this to your app service name
+  AZURE_WEBAPP_PACKAGE_PATH: '.'                  # Set this to the path to your web app project
+  JAVA_VERSION: '11'                              # Set this to the Java version to use
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🛎️ Checkout code
+      uses: actions/checkout@v4
+
+    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+
+    - name: 🔧 Install Kotlin compiler
+      run: |
+        wget -q https://github.com/JetBrains/kotlin/releases/download/v1.9.20/kotlin-compiler-1.9.20.zip
+        unzip -q kotlin-compiler-1.9.20.zip
+        sudo mv kotlinc /opt/
+        echo "/opt/kotlinc/bin" >> $GITHUB_PATH
+
+    - name: 🏗️ Build Kotlin application
+      run: |
+        echo "Building Kotlin application..."
+        kotlinc kotlin/*.kt -include-runtime -d ProductManagementSystem.jar
+        ls -la *.jar
+
+    - name: 📦 Prepare deployment artifacts
+      run: |
+        # Create deployment directory
+        mkdir -p deployment
+        
+        # Copy JAR file
+        cp ProductManagementSystem.jar deployment/
+        
+        # Copy frontend files
+        cp -r frontend/* deployment/
+        
+        # Create a simple startup script for Azure
+        cat > deployment/startup.sh << 'EOF'
+        #!/bin/bash
+        # Start the Kotlin application
+        java -jar ProductManagementSystem.jar &
+        
+        # Start a simple HTTP server for frontend (optional)
+        # You can replace this with your preferred web server
+        if command -v python3 &> /dev/null; then
+            cd frontend && python3 -m http.server 8080 &
+        elif command -v python &> /dev/null; then
+            cd frontend && python -m SimpleHTTPServer 8080 &
+        fi
+        
+        wait
+        EOF
+        chmod +x deployment/startup.sh
+        
+        # Create web.config for Azure App Service (if needed)
+        cat > deployment/web.config << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <system.webServer>
+            <handlers>
+              <add name="httpPlatformHandler" path="*" verb="*" modules="httpPlatformHandler" resourceType="Unspecified" />
+            </handlers>
+            <httpPlatform processPath="%JAVA_HOME%\bin\java.exe" 
+                          arguments="-Djava.net.preferIPv4Stack=true -Dserver.port=%HTTP_PLATFORM_PORT% -jar &quot;%HOME%\site\wwwroot\ProductManagementSystem.jar&quot;"
+                          stdoutLogEnabled="true"
+                          stdoutLogFile="%HOME%\LogFiles\stdout.log"
+                          startupTimeLimit="60"
+                          startupRetryCount="3" >
+            </httpPlatform>
+          </system.webServer>
+        </configuration>
+        EOF
+
+    - name: 🚀 Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: './deployment'
+
+    - name: 🧪 Health Check
+      run: |
+        echo "Waiting for application to start..."
+        sleep 30
+        
+        # Test if the application is running (adjust URL as needed)
+        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/ || echo "Health check failed - application might still be starting"

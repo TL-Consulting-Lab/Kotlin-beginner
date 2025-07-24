@@ -1,0 +1,65 @@
+name: Deploy Frontend to Azure Storage
+
+on:
+  push:
+    branches: [ main, master, feat/kotlintestrun ]
+    paths: [ 'frontend/**' ]
+  pull_request:
+    branches: [ main, master ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch:
+
+env:
+  AZURE_STORAGE_ACCOUNT: kotlinfrontend${{ github.run_number }}
+  RESOURCE_GROUP: kotlin-app-rg
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    name: Deploy Frontend to Azure Storage
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 🏗️ Create Storage Account for Static Website
+        run: |
+          # Create storage account with a unique name
+          STORAGE_NAME="kotlinfrontend$(date +%s)"
+          echo "STORAGE_NAME=$STORAGE_NAME" >> $GITHUB_ENV
+          
+          az storage account create \
+            --name $STORAGE_NAME \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --location eastus \
+            --sku Standard_LRS \
+            --kind StorageV2
+
+      - name: 🌐 Enable Static Website Hosting
+        run: |
+          az storage blob service-properties update \
+            --account-name $STORAGE_NAME \
+            --static-website \
+            --index-document index.html
+
+      - name: 📤 Upload Frontend Files
+        run: |
+          az storage blob upload-batch \
+            --account-name $STORAGE_NAME \
+            --auth-mode key \
+            --destination '$web' \
+            --source ./frontend
+
+      - name: 🌐 Get Website URL
+        run: |
+          WEBSITE_URL=$(az storage account show \
+            --name $STORAGE_NAME \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "primaryEndpoints.web" \
+            --output tsv)
+          echo "Frontend deployed at: $WEBSITE_URL"
+          echo "::notice title=Frontend Deployed::Frontend is available at $WEBSITE_URL"
