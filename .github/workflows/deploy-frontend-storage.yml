@@ -2,11 +2,11 @@ name: Deploy Frontend to Azure Storage
 
 on:
   push:
-    branches: [ main, master, feat/kotlintestrun ]
-    paths: [ 'frontend/**' ]
+    branches: [main, master, feat/kotlintestrun]
+    paths: ['frontend/**']
   pull_request:
-    branches: [ main, master ]
-    paths: [ 'frontend/**' ]
+    branches: [main, master]
+    paths: ['frontend/**']
   workflow_dispatch:
 
 env:
@@ -16,13 +16,13 @@ env:
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
-    name: Deploy Frontend to Azure Storage
+    name: 🚀 Deploy Frontend to Azure Storage
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v4
 
       - name: 🔐 Log in to Azure CLI
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
