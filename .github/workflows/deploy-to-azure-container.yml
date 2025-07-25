@@ -63,6 +63,18 @@ jobs:
 
       - name: 🚀 Deploy to Azure Container Instances
         run: |
+          # Delete existing container if it exists
+          echo "Checking for existing container..."
+          az container delete \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_CONTAINER_INSTANCE }} \
+            --yes || echo "No existing container to delete"
+          
+          # Wait a moment for cleanup
+          sleep 10
+          
+          # Create new container
+          echo "Creating new container..."
           az container create \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --name ${{ env.AZURE_CONTAINER_INSTANCE }} \
@@ -74,6 +86,7 @@ jobs:
             --ports 8080 \
             --cpu 1 \
             --memory 2 \
+            --os-type Linux \
             --restart-policy Always \
             --environment-variables APP_ENV=production
 
