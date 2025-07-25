@@ -12,7 +12,12 @@ kotlinappregistry1859
 jJpsiwgOznk14ejbrmkFkOG7QNjHTmmbHw3vVSTbrC+ACRDEdqYn
 ```
 
-### 3. AZURE_CREDENTIALS (Complete JSON)
+### 3. AZURE_STATIC_WEB_APPS_API_TOKEN
+```
+78167be5c03d090d662979aeef569a86ea133dadc0e7198ceda737d88479d76d02-3d5c689e-f343-4b5d-b418-184b913bf1a500f15210939ae70f
+```
+
+### 4. AZURE_CREDENTIALS (Complete JSON)
 ```json
 {
   "clientId": "d2eb5f87-ef5e-4369-ad5c-897beb9f2281",

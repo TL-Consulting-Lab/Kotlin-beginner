@@ -1,9 +1,9 @@
 # Use OpenJDK as base image
 FROM openjdk:11-jre-slim
 
-# Install Kotlin compiler and necessary tools
+# Install all dependencies in one layer
 RUN apt-get update && \
-    apt-get install -y wget unzip curl && \
+    apt-get install -y wget unzip curl python3 && \
     wget -q https://github.com/JetBrains/kotlin/releases/download/v1.9.20/kotlin-compiler-1.9.20.zip && \
     unzip -q kotlin-compiler-1.9.20.zip && \
     mv kotlinc /opt/ && \
@@ -19,28 +19,41 @@ WORKDIR /app
 # Copy Kotlin source files
 COPY kotlin/ ./kotlin/
 
-# Compile Kotlin application
-RUN kotlinc kotlin/*.kt -include-runtime -d ProductManagementSystem.jar
-
 # Copy frontend files
 COPY frontend/ ./frontend/
+
+# Compile Kotlin application with error handling
+RUN echo "Compiling Kotlin application..." && \
+    kotlinc kotlin/*.kt -include-runtime -d ProductManagementSystem.jar && \
+    echo "Kotlin compilation successful!" && \
+    ls -la ProductManagementSystem.jar
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
 echo "Starting Product Management System..."\n\
-java -jar ProductManagementSystem.jar &\n\
+echo "JAR file location: $(pwd)/ProductManagementSystem.jar"\n\
+if [ ! -f "ProductManagementSystem.jar" ]; then\n\
+    echo "ERROR: ProductManagementSystem.jar not found!"\n\
+    exit 1\n\
+fi\n\
 \n\
-# Serve frontend files (optional - for demo purposes)\n\
+# Start the Kotlin application in background\n\
+java -jar ProductManagementSystem.jar &\n\
+KOTLIN_PID=$!\n\
+\n\
+# Serve frontend files on port 8080\n\
 if [ -d "frontend" ]; then\n\
     echo "Starting frontend server on port 8080..."\n\
     cd frontend\n\
     python3 -m http.server 8080 &\n\
+    FRONTEND_PID=$!\n\
+    cd ..\n\
+else\n\
+    echo "Frontend directory not found"\n\
 fi\n\
 \n\
-wait' > startup.sh && chmod +x startup.sh
-
-# Install Python for serving frontend (optional)
-RUN apt-get update && apt-get install -y python3 && apt-get clean
+# Wait for both processes\n\
+wait\n' > startup.sh && chmod +x startup.sh
 
 # Expose ports
 EXPOSE 8080

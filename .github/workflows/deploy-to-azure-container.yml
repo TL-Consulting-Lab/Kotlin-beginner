@@ -21,7 +21,16 @@ jobs:
     - name: 🛎️ Checkout code
       uses: actions/checkout@v4
 
-    - name: 🐳 Set up Docker Buildx
+    - name: � Debug: List project files
+      run: |
+        echo "Project structure:"
+        find . -type f -name "*.kt" -o -name "*.html" -o -name "*.js" -o -name "*.css" | head -20
+        echo "Kotlin files:"
+        ls -la kotlin/
+        echo "Frontend files:"
+        ls -la frontend/
+
+    - name: �🐳 Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
     - name: 🔐 Log in to Azure Container Registry
@@ -42,6 +51,13 @@ jobs:
           ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        build-args: |
+          BUILDKIT_INLINE_CACHE=1
+        
+    - name: 📋 Debug: Verify image was built
+      run: |
+        echo "Checking if image was pushed successfully..."
+        docker images | grep ${{ env.CONTAINER_NAME }} || echo "No local images found (this is normal for push-only builds)"
 
     - name: 🔐 Log in to Azure CLI
       uses: azure/login@v1
