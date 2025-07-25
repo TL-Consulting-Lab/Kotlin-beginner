@@ -2,9 +2,9 @@ name: Deploy Kotlin App to Azure Container Instances
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feat/kotlintestrun ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, feat/kotlintestrun ]
   workflow_dispatch:
 
 env:
