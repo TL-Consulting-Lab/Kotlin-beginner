@@ -8,24 +8,35 @@ A simple console-based Product Management System built with Kotlin that allows y
 - 🔍 **Search Product**: Search products by name, category, or description
 - ➕ **Create Product**: Add new products to the system
 - 💾 **Sample Data**: Comes pre-loaded with sample products for demonstration
-- 🌐 **Web Interface**: Modern responsive web UI in the `frontend/` directory
-- 📱 **Mobile Friendly**: Responsive design that works on all devices
+- 🖥️ **Console Interface**: Clean, user-friendly console-based interface
+- ⚡ **Fast Performance**: Lightweight Kotlin application with instant startup
+
+## 🚀 Quick Start
+
+### **Console Application**
+```powershell
+cmd /c "gradlew.bat build -x test"
+java -jar ".\build\libs\product-management-system-1.0.0.jar"
+```
 
 ## Project Structure
 
 ```
 Kotlin-beginner/
-├── kotlin/                # Kotlin source files
-│   ├── Product.kt         # Product data class
-│   ├── ProductManager.kt  # Product management logic
-│   └── Main.kt           # Main application entry point
-├── frontend/              # Web UI components
-│   ├── index.html         # Main HTML interface
-│   ├── styles.css         # Modern CSS styling
-│   ├── app.js             # JavaScript application logic
-│   └── README.md          # Frontend documentation
-├── run.sh                 # Build and run script
-├── demo-prompts.md        # Demo and testing prompts
+├── src/                   # Modern Gradle project structure
+│   ├── main/kotlin/       # Main source code
+│   │   ├── Product.kt     # Product data class
+│   │   ├── ProductManager.kt # Product management logic
+│   │   └── Main.kt        # Main application entry point
+│   └── test/kotlin/       # Test source code
+├── docs/                  # Project documentation
+│   ├── GRADLE.md          # Build system guide
+│   ├── challenges-prompts.md # Learning challenges
+│   └── demo-prompts.md    # Demo scenarios
+├── gradle/wrapper/        # Gradle wrapper files
+├── build.gradle.kts       # Gradle build configuration
+├── settings.gradle.kts    # Gradle settings
+├── gradlew & gradlew.bat  # Gradle wrapper scripts
 └── README.md              # This file
 ```
 
@@ -41,46 +52,92 @@ Each product has the following properties:
 
 ## How to Run
 
+### Prerequisites
+
+Before running the project, ensure you have the following installed:
+- **Java 21** or higher
+- **Kotlin 2.1.0** or higher  
+- **Gradle** (included via wrapper)
+
+### PowerShell Configuration (Windows Users)
+
+If you encounter execution policy issues with PowerShell, check your current policy:
+
+```powershell
+Get-ExecutionPolicy
+```
+
+If it shows `Restricted`, you may need to use `cmd` commands instead of PowerShell, or set the policy to `RemoteSigned`:
+
+```powershell
+# Check current policy
+Get-ExecutionPolicy
+
+# If needed, set to RemoteSigned (run as Administrator)
+Set-ExecutionPolicy RemoteSigned
+```
+
 ### Console Application (Kotlin)
 
-1. Make sure you have Kotlin installed on your system
-2. Navigate to the project directory
-3. Compile and run the application:
+#### Method 1: Using Gradle (Recommended)
+```powershell
+# Build the project (Windows)
+cmd /c "gradlew.bat build -x test"
 
-```bash
-# Using the provided script
-./run.sh
-
-# Or compile manually
-kotlinc kotlin/*.kt -include-runtime -d ProductManagementSystem.jar
-java -jar ProductManagementSystem.jar
+# Run the console application
+java -jar ".\build\libs\product-management-system-1.0.0.jar"
 ```
 
-Alternatively, if you have Kotlin script runner:
-
-```bash
-# Run directly with Kotlin
-kotlin MainKt
+#### Method 2: Using Gradle Run Task
+```powershell
+# Run directly with Gradle (may have input issues in VS Code terminal)
+cmd /c "gradlew.bat run --console=plain"
 ```
 
-### Web Interface
-
-1. Navigate to the frontend directory:
+#### For Linux/macOS:
 ```bash
-cd frontend
+# Build the project
+./gradlew build -x test
+
+# Run the console application
+java -jar build/libs/product-management-system-1.0.0.jar
 ```
 
-2. Open the web interface:
-```bash
-# Option 1: Open directly in browser
-open index.html
+### 🔧 Troubleshooting
 
-# Option 2: Serve with HTTP server (recommended)
-python3 -m http.server 8000
-# Then visit http://localhost:8000
+#### Common Issues:
+
+**Gradle Daemon Memory Issues:**
+```powershell
+# Stop all Gradle daemons and retry
+cmd /c "gradlew.bat --stop"
+cmd /c "gradlew.bat build -x test"
 ```
 
-The web interface provides a modern, interactive UI with the same functionality as the console application.
+**Port Already in Use:**
+```powershell
+# Use a different port
+npx http-server -p 8080 -o
+```
+
+**PowerShell Script Execution:**
+```powershell
+# Use cmd wrapper for Gradle commands
+cmd /c "gradlew.bat [command]"
+```
+
+**Console Input Issues:**
+- The console application works best in Windows Command Prompt or external terminal
+- VS Code integrated terminal may have input handling limitations
+
+### ✅ Verification Steps
+
+1. **Check Java:** `java -version` (should show 21+)
+2. **Check Kotlin:** `kotlin -version` (should show 2.1.0+)
+3. **Build Project:** `cmd /c "gradlew.bat build -x test"`
+4. **Run Console:** `java -jar ".\build\libs\product-management-system-1.0.0.jar"`
+
+The console application provides a clean, interactive interface with full product management functionality.
 
 ## Usage
 
@@ -88,29 +145,22 @@ The web interface provides a modern, interactive UI with the same functionality 
 When you run the Kotlin application, you'll see a main menu with the following options:
 
 1. **View All Products**: Shows all products currently in the system
-2. **Search Product**: Enter a search term to find products by name, category, or description
+2. **Search Products**: Enter a search term to find products by name, category, or description
 3. **Create Product**: Add a new product by providing:
    - Product name
    - Product description
    - Price
    - Category
    - Stock quantity
-4. **Exit**: Close the application
+4. **View Inventory Statistics**: See total products, categories, and stock levels
+5. **View Products by Category**: Browse products organized by categories
+6. **Exit**: Close the application
 
-### Web Interface
-The web interface provides four main sections:
-
-1. **📊 Dashboard**: Overview with statistics and recent products
-2. **📋 View Products**: Complete product listing with filtering and sorting
-3. **🔍 Search Products**: Advanced search with real-time results
-4. **➕ Create Product**: Interactive form with validation
-
-#### Web Features:
-- **Real-time Statistics**: Live dashboard with total products, categories, value, and stock
-- **Advanced Filtering**: Filter by category and sort by multiple criteria
-- **Toast Notifications**: User-friendly feedback for all operations
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Modern UI**: Beautiful gradient design with smooth animations
+### Navigation
+- Use number keys (1-6) to select menu options
+- Follow the prompts for data entry
+- Press Enter to continue after viewing results
+- Input validation ensures data quality
 
 ## Sample Products
 
@@ -123,6 +173,8 @@ The system comes with the following pre-loaded sample products:
 
 ## Code Features
 
+## Code Features
+
 ### Kotlin Backend
 - **Data Class**: Uses Kotlin data class for clean product representation
 - **Mutable List**: Products stored in a mutable list for easy manipulation
@@ -131,35 +183,31 @@ The system comes with the following pre-loaded sample products:
 - **Input Validation**: Comprehensive input validation for all user inputs
 - **Error Handling**: Proper error handling with try-catch blocks
 - **Clean UI**: Well-formatted console output with clear separators
+- **Service Architecture**: Separation of concerns with service and UI layers
+- **Modern Gradle**: Uses Gradle with Kotlin DSL for build management
 
-### Frontend Web Interface
-- **Modern JavaScript**: ES6+ class-based architecture with event-driven design
-- **Responsive CSS**: Mobile-first design with CSS Grid and Flexbox
-- **Glass Morphism**: Modern backdrop-filter effects and gradient backgrounds
-- **Component Architecture**: Modular, reusable UI components
-- **Real-time Updates**: Dynamic content updates without page refresh
-- **Form Validation**: Client-side validation with immediate feedback
-- **Toast Notifications**: Custom notification system for user feedback
-- **Data Synchronization**: Same sample data as Kotlin backend for consistency
+## 📚 Documentation
+
+For detailed information, check out the [`docs/`](docs/) folder:
+
+- **[Build & Setup Guide](docs/GRADLE.md)** - Complete Gradle configuration and build instructions
+- **[Learning Challenges](docs/challenges-prompts.md)** - Programming exercises and practice problems
+- **[Demo Scenarios](docs/demo-prompts.md)** - Example use cases and guided demonstrations
+- **[Documentation Overview](docs/README.md)** - Complete docs folder navigation
 
 ## Future Enhancements
 
-### Backend Improvements
+### Application Improvements
 - Update/Edit existing products
 - Delete products
-- Save/Load products from file
+- Save/Load products from file (JSON/CSV)
 - Product categories management
 - Inventory management features
 - Price filtering and sorting
 - Export product data
-
-### Frontend Enhancements
-- Backend Integration with REST API
-- Real-time updates with WebSocket connections
-- Advanced filtering (price ranges, stock levels)
-- Product image upload and display
-- Bulk operations and batch actions
-- CSV/PDF export functionality
-- User authentication system
-- Dark mode theme switching
-- Offline support with local storage
+- Database integration (H2/SQLite)
+- REST API development
+- Product image support
+- Barcode scanning integration
+- Multi-user support
+- Data backup and restore
