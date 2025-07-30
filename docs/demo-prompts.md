@@ -21,10 +21,10 @@ Suggest commands to run this
 
 Compile the updated code
 > cd Kotlin-beginner
-> kotlinc kotlin\Main.kt kotlin\Product.kt kotlin\ProductManager.kt -include-runtime -d ProductManagementSystem.jar
+> cmd /c "gradlew.bat build -x test"
 
 Run the application
-> java -jar ProductManagementSystem.jar
+> java -jar ".\build\libs\product-management-system-1.0.0.jar"
 
 Open Web Interface
 > cd frontend
