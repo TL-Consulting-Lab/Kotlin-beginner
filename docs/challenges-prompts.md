@@ -23,12 +23,12 @@ These prompts are designed to challenge and extend the Product Management System
 - Add a status filter in the product listing
 - Create a status change log to track when and why products were changed
 
-### **new feature for Price Range Filtering**
+### **New feature for Price Range Filtering**
 - Add a price range filter to the product search
 - Implement a slider for selecting price ranges
 - Create a visual representation of products within the selected price range
 
-### **new feature forStock Level Filtering**
+### **New feature forStock Level Filtering**
 - Add a stock level filter to the product search
 - Implement options for filtering by low stock, medium stock, and high stock
 - Create a visual representation of products based on stock levels      
@@ -51,7 +51,7 @@ These prompts are designed to challenge and extend the Product Management System
 - Implement sorting by price (ascending/descending), stock level, and date added
 - Allow users to save their preferred sorting options
 
-### **support image upload and display for products**
+### **Support image upload and display for products**
 - Implement image upload functionality for products
 - Allow users to upload images when creating or editing products
 - Display product images in the product listing and details view
