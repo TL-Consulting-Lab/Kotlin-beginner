@@ -6,7 +6,7 @@ Inline Copilot chat
 Hiighlight a block of code and ask copilot using /Explain
 
 Agent Mode
-- /explain Please explain this code base 
+- Please explain this codebase and provide a high-level summary of its structure and purpose
 
 ## Using Inline comments for code generation
 Go to, ProductManager.kt, write // Update an existing product. 
